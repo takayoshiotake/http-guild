@@ -67,7 +67,7 @@ describe('Guild', () => {
             }
             let proxyRequest = guild.makeProxyRequest(req)
             expect(proxyRequest.headers).toEqual({
-                'Content-Length': 0,
+                'content-length': 0,
                 'CSV': 'a, b',
                 'Parameter': 42
             })
