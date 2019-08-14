@@ -30,6 +30,10 @@ function codeLocation() {
     return new Error().stack.split(/\n    at /)[2]
 }
 
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(() => resolve(), ms))
+}
+
 const app = express()
 app.use(bodyParser.raw({
     limit: '10mb',
@@ -51,31 +55,50 @@ app.post('/request', async (req, res, next) => {
         return
     }
 
-    let zipChunks = []
-    let zip = archiver('zip', {
-        zlib: {
-            // No compression
-            level: 0
+    let notifying = guild.startNotifyingProxyRequest(proxyRequest)
+    // TODO:
+    let timeout = 5000
+    while (timeout > 0) {
+        await sleep(100)
+        timeout -= 100
+        if (notifying.report) {
+            break
         }
-    })
-    zip.pipe(
-        new Writable({
-            write: function(chunk, encoding, callback) {
-                zipChunks.push(chunk)
-                callback()
-            }
-        })
-    )
-    zip.append(proxyRequest.jsonWithoutBody(prettifies), { name: 'request.json' })
-    if (proxyRequest.body) {
-        zip.append(proxyRequest.body, { name: 'body' })
     }
-    await zip.finalize()
-    let zipBuffer = Buffer.concat(zipChunks)
-    console.log(zipBuffer)
-    
-    // TODO: Return the report of the request (await the report from agent)
-    res.status(200).send()
+
+    // TODO: Move to GET /request
+    // let zipChunks = []
+    // let zip = archiver('zip', {
+    //     zlib: {
+    //         // No compression
+    //         level: 0
+    //     }
+    // })
+    // zip.pipe(
+    //     new Writable({
+    //         write: function(chunk, encoding, callback) {
+    //             zipChunks.push(chunk)
+    //             callback()
+    //         }
+    //     })
+    // )
+    // zip.append(proxyRequest.jsonWithoutBody(prettifies), { name: 'request.json' })
+    // if (proxyRequest.body) {
+    //     zip.append(proxyRequest.body, { name: 'body' })
+    // }
+    // await zip.finalize()
+    // let zipBuffer = Buffer.concat(zipChunks)
+    // console.log(zipBuffer)
+
+    guild.stopNotifyingProxyRequest(proxyRequest.id)
+    let report = notifying.report
+    if (report) {
+        // TODO: Return the report of the request (await the report from agent)
+        res.status(200).send()
+    } else {
+        // Gateway Timeout
+        res.status(504).send()
+    }
 })
 
 if (!module.parent) {

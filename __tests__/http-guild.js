@@ -116,4 +116,17 @@ describe('Guild', () => {
             }).toThrow('content-length missmatch')
         })
     })
+    describe('notifyProxyRequest', () => {
+        test('sequence', () => {
+            let guild = new HttpGuild()
+            // xxx: use dummy proxy request
+            let notifying = guild.startNotiyingProxyRequest({
+                id: '0'
+            })
+            expect(notifying.report).toBeUndefined()
+            expect(guild._notifyingProxyRequests).toContain(notifying)
+            guild.stopNotifyingProxyRequest('0')
+            expect(guild._notifyingProxyRequests).not.toContain(notifying)
+        })
+    })
 })
