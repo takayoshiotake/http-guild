@@ -56,7 +56,7 @@ app.post('/request', async (req, res, next) => {
     }
 
     let notifying = guild.startNotifyingProxyRequest(proxyRequest)
-    // TODO:
+    // TODO: parse X-Guild-Timeout in headers
     let timeout = 5000
     while (timeout > 0) {
         await sleep(100)
