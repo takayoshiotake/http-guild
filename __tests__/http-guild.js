@@ -99,5 +99,21 @@ describe('Guild', () => {
             let proxyRequest = guild.makeProxyRequest(req)
             expect(proxyRequest.condition).toEqual([ 'audio', 'japan' ])
         })
+        test('content-length missmatch', () => {
+            expect(() => {
+                let req = {
+                    query: {
+                        method: 'GET',
+                        uri: '/test'
+                    },
+                    headers: {
+                        'Content-Length': 2,
+                        'Content-Type': 'text/plain'
+                    },
+                    body: new Buffer(1)
+                }
+                guild.makeProxyRequest(req)
+            }).toThrow('content-length missmatch')
+        })
     })
 })
