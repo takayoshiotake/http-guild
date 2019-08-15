@@ -1,10 +1,9 @@
 const HttpGuild = require('../lib/http-guild.js')
 
-const guild = new HttpGuild()
-
 describe('Guild', () => {
     describe('makeProxyRequest()', () => {
         test('throws query parameter method missing', () => {
+            let guild = new HttpGuild()
             expect(() => {
                 let req = {
                     query: {}
@@ -13,6 +12,7 @@ describe('Guild', () => {
             }).toThrow('query parameter method missing')
         })
         test('throws query parameter uri missing', () => {
+            let guild = new HttpGuild()
             expect(() => {
                 let req = {
                     query: {
@@ -23,6 +23,7 @@ describe('Guild', () => {
             }).toThrow('query parameter uri missing')
         })
         test('id', () => {
+            let guild = new HttpGuild()
             let req = {
                 query: {
                     method: 'GET',
@@ -36,6 +37,7 @@ describe('Guild', () => {
             expect(proxyRequest.id).toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}/)
         })
         test('query', () => {
+            let guild = new HttpGuild()
             let req = {
                 query: {
                     method: 'GET',
@@ -50,6 +52,7 @@ describe('Guild', () => {
             expect(proxyRequest.uri).toEqual('/test?p=1&q=2')
         })
         test('header', () => {
+            let guild = new HttpGuild()
             let req = {
                 query: {
                     method: 'GET',
@@ -73,6 +76,7 @@ describe('Guild', () => {
             })
         })
         test('no conditions', () => {
+            let guild = new HttpGuild()
             let req = {
                 query: {
                     method: 'GET',
@@ -86,6 +90,7 @@ describe('Guild', () => {
             expect(proxyRequest.condition).toEqual([])
         })
         test('random conditions', () => {
+            let guild = new HttpGuild()
             let req = {
                 query: {
                     method: 'GEET',
@@ -100,6 +105,7 @@ describe('Guild', () => {
             expect(proxyRequest.condition).toEqual([ 'audio', 'japan' ])
         })
         test('content-length missmatch', () => {
+            let guild = new HttpGuild()
             expect(() => {
                 let req = {
                     query: {
@@ -127,6 +133,44 @@ describe('Guild', () => {
             expect(guild._notifyingProxyRequests).toContain(notifying)
             guild.stopNotifyingProxyRequest('0')
             expect(guild._notifyingProxyRequests).not.toContain(notifying)
+        })
+    })
+    describe('takeProxyRequest()', () => {
+        test('no proxy requests', () => {
+            let guild = new HttpGuild()
+            expect(guild.takeProxyRequest()).toBeUndefined()
+        })
+        test('no condition', () => {
+            let guild = new HttpGuild()
+            guild.startNotifyingProxyRequest({
+                id: '0',
+                condition: []
+            })
+            expect(guild.takeProxyRequest()).not.toBeUndefined()
+        })
+        test('no ability', () => {
+            let guild = new HttpGuild()
+            guild.startNotifyingProxyRequest({
+                id: '0',
+                condition: ['1', '2']
+            })
+            expect(guild.takeProxyRequest(['1'])).toBeUndefined()
+        })
+        test('just ability', () => {
+            let guild = new HttpGuild()
+            guild.startNotifyingProxyRequest({
+                id: '0',
+                condition: ['1', '2']
+            })
+            expect(guild.takeProxyRequest(['2', '1'])).not.toBeUndefined()
+        })
+        test('sufficient ability', () => {
+            let guild = new HttpGuild()
+            guild.startNotifyingProxyRequest({
+                id: '0',
+                condition: ['1', '2']
+            })
+            expect(guild.takeProxyRequest(['1', '2', '3'])).not.toBeUndefined()
         })
     })
 })
