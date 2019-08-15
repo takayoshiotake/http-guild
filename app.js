@@ -42,9 +42,9 @@ app.use(bodyParser.raw({
 
 const guild = new HttpGuild()
 
-app.post('/request', async (req, res, next) => {
-    let prettifies = true
+// for client
 
+app.post('/request', async (req, res, next) => {
     // Make proxy request
     let proxyRequest
     try {
@@ -66,30 +66,6 @@ app.post('/request', async (req, res, next) => {
         }
     }
 
-    // TODO: Move to GET /request
-    // let zipChunks = []
-    // let zip = archiver('zip', {
-    //     zlib: {
-    //         // No compression
-    //         level: 0
-    //     }
-    // })
-    // zip.pipe(
-    //     new Writable({
-    //         write: function(chunk, encoding, callback) {
-    //             zipChunks.push(chunk)
-    //             callback()
-    //         }
-    //     })
-    // )
-    // zip.append(proxyRequest.jsonWithoutBody(prettifies), { name: 'request.json' })
-    // if (proxyRequest.body) {
-    //     zip.append(proxyRequest.body, { name: 'body' })
-    // }
-    // await zip.finalize()
-    // let zipBuffer = Buffer.concat(zipChunks)
-    // console.log(zipBuffer)
-
     guild.stopNotifyingProxyRequest(proxyRequest.id)
     let report = notifying.report
     if (report) {
@@ -100,6 +76,47 @@ app.post('/request', async (req, res, next) => {
         res.status(504).send()
     }
 })
+
+// for agent
+
+app.get('/request', async (req, res, next) => {
+    let prettifies = true
+
+    let ability = guild.getAgentAbility(req)
+    let proxyRequest = guild.takeProxyRequest(ability)
+    if (!proxyRequest) {
+        res.status(204).send()
+        return
+    }
+
+    // let zipChunks = []
+    let zip = archiver('zip', {
+        zlib: {
+            // No compression
+            level: 0
+        }
+    })
+    zip.pipe(
+        // new Writable({
+        //     write: function(chunk, encoding, callback) {
+        //         zipChunks.push(chunk)
+        //         callback()
+        //     }
+        // })
+        res
+    )
+    zip.append(proxyRequest.jsonWithoutBody(prettifies), { name: 'request.json' })
+    if (proxyRequest.body) {
+        zip.append(proxyRequest.body, { name: 'body' })
+    }
+    await zip.finalize()
+    // let zipBuffer = Buffer.concat(zipChunks)
+    // console.log(zipBuffer)
+
+    // TODO: zip
+    res.status(200).send()
+})
+
 
 if (!module.parent) {
     console.dir(config)
