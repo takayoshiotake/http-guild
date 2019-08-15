@@ -120,7 +120,7 @@ describe('Guild', () => {
         test('sequence', () => {
             let guild = new HttpGuild()
             // xxx: use dummy proxy request
-            let notifying = guild.startNotiyingProxyRequest({
+            let notifying = guild.startNotifyingProxyRequest({
                 id: '0'
             })
             expect(notifying.report).toBeUndefined()
