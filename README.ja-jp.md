@@ -48,6 +48,7 @@ HTTP Client    |     HTTPS Server     |   HTTPS Client       HTTP Server
 
 ここで、ターゲットは本来クライアントが実行したいWeb APIです。また、http-guildはHTTPSを提供しないため、セキュリティ上の理由から他のHTTPSサーバーと組み合せて利用することを想定してます。
 
+NOTE: このプロジェクトは実験的なものです。ほとんどのケースでSSHポートフォワーディングを採用した方がネットワークがシンプルになります。
 
 ## Client Web API
 
