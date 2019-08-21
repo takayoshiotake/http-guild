@@ -49,5 +49,7 @@ HTTP Client    |     HTTPS Server     |   HTTPS Client       HTTP Server
 
 Here, the target is the Web API that the client originally wants to execute. And, since http-guild does not provide HTTPS, it is assumed that it will be used in combination with other HTTPS servers for security reasons.
 
+NOTE: This project is experimental. In most cases, using SSH port forwarding makes the network simpler.
+
 ---
 Now writing... see README.ja-jp.md.
