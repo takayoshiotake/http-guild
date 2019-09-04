@@ -104,6 +104,51 @@ describe('Guild', () => {
             let proxyRequest = guild.makeProxyRequest(req)
             expect(proxyRequest.condition).toEqual([ 'audio', 'japan' ])
         })
+        test('no timeout', () => {
+            let guild = new HttpGuild()
+            let req = {
+                query: {
+                    method: 'GET',
+                    uri: '/test'
+                },
+                headers: {
+                    'Content-Length': 0
+                }
+            }
+            let proxyRequest = guild.makeProxyRequest(req)
+            expect(proxyRequest.timeout).toEqual(5000)
+        })
+        test('random timeout', () => {
+            let guild = new HttpGuild()
+            let req = {
+                query: {
+                    method: 'GET',
+                    uri: '/test'
+                },
+                headers: {
+                    'Content-Length': 0,
+                    'X-Guild-Timeout': 10000,
+                }
+            }
+            let proxyRequest = guild.makeProxyRequest(req)
+            expect(proxyRequest.timeout).toEqual(10000)
+        })
+        test('invalid x-guild-timeout of header field', () => {
+            let guild = new HttpGuild()
+            expect(() => {
+                let req = {
+                    query: {
+                        method: 'GET',
+                        uri: '/test'
+                    },
+                    headers: {
+                        'Content-Length': 0,
+                        'X-Guild-Timeout': 'abc',
+                    }
+                }
+                guild.makeProxyRequest(req)
+            }).toThrow('invalid x-guild-timeout of header field')
+        })
         test('content-length missmatch', () => {
             let guild = new HttpGuild()
             expect(() => {
@@ -116,7 +161,7 @@ describe('Guild', () => {
                         'Content-Length': 2,
                         'Content-Type': 'text/plain'
                     },
-                    body: new Buffer(1)
+                    body: new Buffer.alloc(1)
                 }
                 guild.makeProxyRequest(req)
             }).toThrow('content-length missmatch')

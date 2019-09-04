@@ -56,8 +56,7 @@ app.post('/request', async (req, res, next) => {
     }
 
     let notifying = guild.startNotifyingProxyRequest(proxyRequest)
-    // TODO: parse X-Guild-Timeout in headers
-    let timeout = 5000
+    let timeout = proxyRequest.timeout
     while (timeout > 0) {
         await sleep(100)
         timeout -= 100
@@ -112,8 +111,6 @@ app.get('/request', async (req, res, next) => {
     await zip.finalize()
     // let zipBuffer = Buffer.concat(zipChunks)
     // console.log(zipBuffer)
-
-    // TODO: zip
     res.status(200).send()
 })
 
