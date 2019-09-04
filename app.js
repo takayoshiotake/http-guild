@@ -69,7 +69,8 @@ app.post('/request', async (req, res, next) => {
     let report = notifying.report
     if (report) {
         // TODO: Return the report of the request (await the report from agent)
-        res.status(200).send()
+        res.status(200)
+        res.send(report)
     } else {
         // Gateway Timeout
         res.status(504).send()
@@ -116,6 +117,7 @@ app.get('/request', async (req, res, next) => {
 
 app.post('/reports/:requestId', async (req, res, next) => {
     let proxyRequestId = req.params.requestId
+    // FIXME
     if (guild.reportForProxyRequest(proxyRequestId, req.body)) {
         res.status(200).send()
     } else {

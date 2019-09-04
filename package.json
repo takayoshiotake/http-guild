@@ -16,6 +16,8 @@
   },
   "devDependencies": {
     "jest": "^24.8.0",
-    "supertest": "^4.0.2"
+    "node-fetch": "^2.6.0",
+    "supertest": "^4.0.2",
+    "unzipper": "^0.10.4"
   }
 }
