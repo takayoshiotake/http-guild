@@ -179,6 +179,8 @@ Web APIの代行結果を報告します。
 
 URIパラメータのrequestIdは代行依頼を請け負った際に取得したものを使用します。
 
+FIXME: unzipが面倒なので`POST /v1/request`と同様にした方が良さそう
+
 メッセージボディはターゲットのWeb APIの結果をまとめたreport.jsonとbodyをzipにアーカイブしたものになります。
 
 report.jsonは次のようになります。
