@@ -114,6 +114,15 @@ app.get('/request', async (req, res, next) => {
     res.status(200).send()
 })
 
+app.post('/reports/:requestId', async (req, res, next) => {
+    let proxyRequestId = req.params.requestId
+    if (guild.reportForProxyRequest(proxyRequestId, req.body)) {
+        res.status(200).send()
+    } else {
+        res.status(400).send()
+    }
+})
+
 
 if (!module.parent) {
     console.dir(config)
